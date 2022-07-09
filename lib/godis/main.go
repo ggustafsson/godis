@@ -1,3 +1,3 @@
-package gds
+package godis
 
 // Placeholder...
