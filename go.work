@@ -1,3 +1,7 @@
 go 1.18
 
-use ./pkg/godis
+use (
+	./cmd/title
+	./pkg/godis
+	./pkg/title
+)
