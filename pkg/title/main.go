@@ -62,6 +62,10 @@ func Titleize(text string) string {
 	last_word := len(words) - 1
 	skip_next := false
 
+	// Regex matching "A.Z." (or longer) abbreviation patterns.
+	// XXX: Using \pL instead of \w for Unicode letters.
+	abbrev := regexp.MustCompile(`^(\pL{1}\.){2,}$`)
+
 	for index, word := range words {
 		// Check if current iteration should be treated as new sentence.
 		skip := bool(skip_next)
@@ -70,13 +74,8 @@ func Titleize(text string) string {
 		skip_next = godis.Contains(end_sentence, word[len(word)-1:])
 
 		// Check if end of sentence or punctuated abbreviation.
-		if word[len(word)-1:] == "." {
-			// Match "A.Z." (or longer) abbreviation patterns.
-			// XXX: Using \pL instead of \w for Unicode letters.
-			re := regexp.MustCompile(`^(\pL{1}\.){2,}$`)
-			if re.MatchString(word) {
-				skip_next = false
-			}
+		if word[len(word)-1:] == "." && abbrev.MatchString(word) {
+			skip_next = false
 		}
 
 		// Check if new sentence, first word or last word first.
