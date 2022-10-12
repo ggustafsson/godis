@@ -20,33 +20,33 @@ import "os"
 
 // Terminal style attributes.
 type attributes struct {
-	Reset     string
+	Blink     string
 	Bold      string
 	Italic    string
-	Underline string
-	Blink     string
+	Reset     string
 	Reverse   string
+	Underline string
 }
 
 // Terminal background & foreground colors.
 type colors struct {
 	Black   string
-	Red     string
-	Green   string
-	Yellow  string
 	Blue    string
-	Magenta string
 	Cyan    string
+	Green   string
+	Magenta string
+	Red     string
 	White   string
+	Yellow  string
 
 	BrightBlack   string
-	BrightRed     string
-	BrightGreen   string
-	BrightYellow  string
 	BrightBlue    string
-	BrightMagenta string
 	BrightCyan    string
+	BrightGreen   string
+	BrightMagenta string
+	BrightRed     string
 	BrightWhite   string
+	BrightYellow  string
 }
 
 var (
@@ -56,7 +56,7 @@ var (
 )
 
 func init() {
-	// Check if running inside of TTY.
+	// Check if running inside of TTY. Equivalent to isatty().
 	stat, _ := os.Stdout.Stat()
 	if (stat.Mode() & os.ModeCharDevice) == os.ModeCharDevice {
 		Attr = attributes{
@@ -108,6 +108,7 @@ func init() {
 			BrightWhite:   "\033[97m",
 		}
 	} else {
+		// Use default type values, i.e. empty strings.
 		Attr = attributes{}
 		Bg = colors{}
 		Fg = colors{}
