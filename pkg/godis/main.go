@@ -15,11 +15,13 @@
 package godis
 
 // Source: https://pkg.go.dev/golang.org/x/exp/slices#Contains
+// XXX: Remove after inclusion in the standard library.
 func Contains[E comparable](s []E, v E) bool {
 	return Index(s, v) >= 0
 }
 
 // Source: https://pkg.go.dev/golang.org/x/exp/slices#Index
+// XXX: Remove after inclusion in the standard library.
 func Index[E comparable](s []E, v E) int {
 	for i, vs := range s {
 		if v == vs {
