@@ -69,20 +69,20 @@ func TestTitleize(t *testing.T) {
 	tests = append(tests, test)
 
 	// Test if all chars in end_sentence list triggers new sentence.
-	for _, word := range end_sentence {
+	for _, char := range end_sentence {
 		test := testSpec{
-			input:  fmt.Sprintf("first %s the last", word),
-			output: fmt.Sprintf("First %s The Last", word),
+			input:  fmt.Sprintf("first %s the last", char),
+			output: fmt.Sprintf("First %s The Last", char),
 		}
 		tests = append(tests, test)
 	}
 
 	// Test if lowercase list is ignored following bracket or quote.
 	sidestep_chars := []string{"(", "{", "[", "<", "\"", "'"}
-	for _, word := range sidestep_chars {
+	for _, char := range sidestep_chars {
 		test := testSpec{
-			input:  fmt.Sprintf("first %sthe last", word),
-			output: fmt.Sprintf("First %sThe Last", word),
+			input:  fmt.Sprintf("first %sthe last", char),
+			output: fmt.Sprintf("First %sThe Last", char),
 		}
 		tests = append(tests, test)
 	}
