@@ -1,8 +1,6 @@
 go 1.19
 
 use (
-	./cmd/title
 	./pkg/colors
 	./pkg/godis
-	./pkg/title
 )
