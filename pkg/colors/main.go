@@ -1,9 +1,10 @@
 // Terminal colors package.
 //
-// Contains preset terminal color and attribute values for convenient use. ANSI
-// 16 colors and basic style attributes only. All values are set to empty
-// string when program is not running inside of interactive TTY, i.e. colors
-// are disabled during redirection or piping.
+// Contains terminal color and attribute values for convenient use. ANSI 16
+// colors and basic style attributes only. All values are set to empty string
+// if NO_COLOR environment variable is set or if program is not running inside
+// of interactive TTY, i.e. colors are automatically disabled during
+// redirection or piping.
 //
 // Usage:
 //
@@ -55,10 +56,21 @@ var (
 	Fg   colors     // Terminal foreground colors.
 )
 
-func init() {
-	// Check if running inside of TTY. Equivalent to isatty().
+// Equivalent to libc isatty().
+func isTTY() bool {
 	stat, _ := os.Stdout.Stat()
-	if (stat.Mode() & os.ModeCharDevice) == os.ModeCharDevice {
+	return (stat.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+}
+
+// Check if NO_COLOR environment variable is set.
+func noColorEnv() bool {
+	_, env := os.LookupEnv("NO_COLOR")
+	return env
+}
+
+func init() {
+	// Check if running inside of TTY and if NO_COLOR is not set.
+	if isTTY() && !noColorEnv() {
 		Attr = attributes{
 			Reset:     "\033[0m",
 			Bold:      "\033[1m",
