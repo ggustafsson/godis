@@ -1,16 +1,67 @@
 // Terminal colors package.
 //
-// Contains terminal color and attribute values for convenient use. ANSI 16
-// colors and basic style attributes only. All values are set to empty string
-// if NO_COLOR environment variable is set or if program is not running inside
-// of interactive TTY, i.e. colors are automatically disabled during
-// redirection or piping.
+// Contains functions that generate data structure with preset terminal color
+// and attribute string values to allow for easy use with standard print
+// functions. ANSI 16 colors and basic style attributes only. By default all
+// values are set to empty string if 'NO_COLOR' environment variable is set or
+// if program is not running inside of interactive TTY, i.e. colors are
+// automatically disabled during redirection or piping.
+//
+// Use function [InitAuto] for recommended default behaviour. Functions
+// [InitOn] and [InitOff] can be used to enforce specific behaviour, e.g. to
+// support implementation of '--color=on/off' argument.
+//
+// Structure:
+//
+//	colors
+//	|-- Attr
+//	|   |-- Blink
+//	|   |-- Bold
+//	|   |-- Italic
+//	|   |-- Reset
+//	|   |-- Reverse
+//	|   `-- Underline
+//	|-- Bg
+//	|   |-- Black
+//	|   |-- Blue
+//	|   |-- Cyan
+//	|   |-- Green
+//	|   |-- Magenta
+//	|   |-- Red
+//	|   |-- White
+//	|   |-- Yellow
+//	|   |-- BrightBlack
+//	|   |-- BrightBlue
+//	|   |-- BrightCyan
+//	|   |-- BrightGreen
+//	|   |-- BrightMagenta
+//	|   |-- BrightRed
+//	|   |-- BrightWhite
+//	|   `-- BrightYellow
+//	`-- Fg
+//	    |-- Black
+//	    |-- Blue
+//	    |-- Cyan
+//	    |-- Green
+//	    |-- Magenta
+//	    |-- Red
+//	    |-- White
+//	    |-- Yellow
+//	    |-- BrightBlack
+//	    |-- BrightBlue
+//	    |-- BrightCyan
+//	    |-- BrightGreen
+//	    |-- BrightMagenta
+//	    |-- BrightRed
+//	    |-- BrightWhite
+//	    `-- BrightYellow
 //
 // Usage:
 //
 //	import "github.com/ggustafsson/godis/pkg/colors"
 //
-//	fmt.Printf("%sHello, 世界%s\n", colors.Fg.BrightRed, colors.Attr.Reset)
+//	term := colors.InitAuto()
+//	fmt.Printf("%sHello, 世界%s\n", term.Fg.BrightRed, term.Attr.Reset)
 //
 // Author: Göran Gustafsson <gustafsson.g@gmail.com>
 //
@@ -20,7 +71,7 @@ package colors
 import "os"
 
 // Terminal style attributes.
-type attributes struct {
+type Attributes struct {
 	Blink     string
 	Bold      string
 	Italic    string
@@ -30,7 +81,7 @@ type attributes struct {
 }
 
 // Terminal background & foreground colors.
-type colors struct {
+type Colors struct {
 	Black   string
 	Blue    string
 	Cyan    string
@@ -50,37 +101,49 @@ type colors struct {
 	BrightYellow  string
 }
 
-var (
-	Attr attributes // Terminal style attributes.
-	Bg   colors     // Terminal background colors.
-	Fg   colors     // Terminal foreground colors.
-)
+// Data structure containing all attributes and colors.
+type Codes struct {
+	Attr Attributes
+	Bg   Colors
+	Fg   Colors
+}
 
-// Equivalent to libc isatty().
+// Check if running inside TTY. Equivalent to libc isatty().
 func isTTY() bool {
 	stat, _ := os.Stdout.Stat()
 	return (stat.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 }
 
-// Check if NO_COLOR environment variable is set.
+// Check if 'NO_COLOR' environment variable is set.
 func noColorEnv() bool {
 	_, env := os.LookupEnv("NO_COLOR")
 	return env
 }
 
-func init() {
-	// Check if running inside of TTY and if NO_COLOR is not set.
+// Run [InitOn] or [InitOff] and return result from function.
+//
+// If program is running inside of interactive TTY and 'NO_COLOR' environment
+// variable is not set use function [InitOn], otherwise use [InitOff].
+func InitAuto() Codes {
 	if isTTY() && !noColorEnv() {
-		Attr = attributes{
+		return InitOn()
+	}
+
+	return InitOff()
+}
+
+// Return data structure with preset attribute and color values.
+func InitOn() Codes {
+	return Codes{
+		Attr: Attributes{
 			Reset:     "\033[0m",
 			Bold:      "\033[1m",
 			Italic:    "\033[3m",
 			Underline: "\033[4m",
 			Blink:     "\033[5m",
 			Reverse:   "\033[7m",
-		}
-
-		Bg = colors{
+		},
+		Bg: Colors{
 			Black:   "\033[40m",
 			Red:     "\033[41m",
 			Green:   "\033[42m",
@@ -98,9 +161,8 @@ func init() {
 			BrightMagenta: "\033[105m",
 			BrightCyan:    "\033[106m",
 			BrightWhite:   "\033[107m",
-		}
-
-		Fg = colors{
+		},
+		Fg: Colors{
 			Black:   "\033[30m",
 			Red:     "\033[31m",
 			Green:   "\033[32m",
@@ -118,11 +180,12 @@ func init() {
 			BrightMagenta: "\033[95m",
 			BrightCyan:    "\033[96m",
 			BrightWhite:   "\033[97m",
-		}
-	} else {
-		// Use default type values, i.e. empty strings.
-		Attr = attributes{}
-		Bg = colors{}
-		Fg = colors{}
+		},
 	}
+}
+
+// Return data structure with empty attribute and color values.
+func InitOff() Codes {
+	// Use default type values, i.e. empty strings.
+	return Codes{}
 }
