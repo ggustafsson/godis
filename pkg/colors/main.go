@@ -60,8 +60,8 @@
 //
 //	import "github.com/ggustafsson/godis/pkg/colors"
 //
-//	term := colors.InitAuto()
-//	fmt.Printf("%sHello, 世界%s\n", term.Fg.BrightRed, term.Attr.Reset)
+//	ansi := colors.InitAuto()
+//	fmt.Printf("%sHello, 世界%s\n", ansi.Fg.BrightRed, ansi.Attr.Reset)
 //
 // Author: Göran Gustafsson <gustafsson.g@gmail.com>
 //
