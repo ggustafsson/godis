@@ -108,7 +108,7 @@ type Codes struct {
 	Fg   Colors
 }
 
-// Check if running inside TTY. Equivalent to libc isatty().
+// Check if running inside of TTY. Equivalent to libc isatty().
 func isTTY() bool {
 	stat, _ := os.Stdout.Stat()
 	return (stat.Mode() & os.ModeCharDevice) == os.ModeCharDevice
